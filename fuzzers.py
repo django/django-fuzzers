@@ -315,16 +315,3 @@ tests = [
     (test_limited_parse_qsl, str),
 
 ]
-
-#def FuzzerRunOne(FuzzerInput):
-#    if len(FuzzerInput) < 2:
-#        return
-#    choice = struct.unpack('>H', FuzzerInput[:2])[0]
-#    if choice >= len(tests):
-#        return
-#    FuzzerInput = FuzzerInput[2:]
-#
-#    if tests[choice][1] == str:
-#        FuzzerInput = FuzzerInput.decode("utf8", "replace")
-#    
-#    tests[choice][0](FuzzerInput)
