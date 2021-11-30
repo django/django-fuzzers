@@ -11,8 +11,6 @@ def TestOneInput(data):
         choice = 0 # Needed so we produce coverage events for short input
     else:
         choice = struct.unpack('>H', data[:2])[0] % len(fuzzers.tests)
-    if choice >= len(fuzzers.tests):
-        return
 
     data = data[2:]
     if fuzzers.tests[choice][1] == str:

@@ -112,7 +112,10 @@ def test_unescape_string_literal(inp):
         pass
 
 def test_get_valid_filename(inp):
-    text.get_valid_filename(inp)
+    try:
+        text.get_valid_filename(inp)
+    except:
+        pass
 
 def test_is_valid_ipv6_address(inp):
     try:
