@@ -1,4 +1,3 @@
-import struct
 import sys
 
 import atheris
@@ -6,17 +5,25 @@ import atheris
 with atheris.instrument_imports():
     import fuzzers
 
+
 def TestOneInput(data):
-    if len(data) < 2:
-        choice = 0 # Needed so we produce coverage events for short input
-    else:
-        choice = struct.unpack('>H', data[:2])[0] % len(fuzzers.tests)
+    fdp = atheris.FuzzedDataProvider(data)
+    choice = fdp.ConsumeIntInRange(0, len(fuzzers.tests) - 1)
+    func, data_type = fuzzers.tests[choice]
 
-    data = data[2:]
-    if fuzzers.tests[choice][1] == str:
-        data = data.decode("utf8", "replace")
+    if data_type == str:
+        data = fdp.ConsumeUnicodeNoSurrogates(sys.maxsize)
+    elif data_type == bytes:
+        data = fdp.ConsumeBytes(sys.maxsize)
+    elif data_type == int:
+        data = fdp.ConsumeInt(sys.maxsize)
 
-    fuzzers.tests[choice][0](data)
+    try:
+        func(data)
+    except Exception:
+        print(func, data_type, repr(data))
+        raise
+
 
 atheris.Setup(sys.argv, TestOneInput)
 atheris.Fuzz()
