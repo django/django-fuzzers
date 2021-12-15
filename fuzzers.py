@@ -7,10 +7,8 @@ from django.utils import text
 from django.utils.http import (
     base36_to_int,
     escape_leading_slashes,
-    # http_date,
     int_to_base36,
     url_has_allowed_host_and_scheme,
-    # is_same_domain,
     parse_etags,
     parse_http_date,
     quote_etag,
@@ -350,6 +348,9 @@ def test_forms_URLField(inp):
         forms.URLField().clean(inp)
     except ValidationError:
         pass
+    except ValueError as e:  # till https://code.djangoproject.com/ticket/33367 is fixed
+        if "Invalid IPv6 URL" not in str(e):
+            raise
 
 
 def test_forms_UUIDField(inp):
