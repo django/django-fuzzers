@@ -176,8 +176,6 @@ def test_unescape_string_literal(inp):
     except ValueError as e:
         if "Not a string literal: " not in str(e):
             raise
-    except IndexError:  # Till https://github.com/django/django/pull/15196/files is fixed
-        pass
 
 
 def test_get_valid_filename(inp):
@@ -209,9 +207,8 @@ def test_camel_case_to_spaces(inp):
 def test_get_tag_uri(inp):
     try:
         feedgenerator.get_tag_uri(inp, datetime.date(2004, 10, 25))
-    except ValueError as e:  # TODO: Is this a wanted exception?
-        if "Invalid IPv6 URL" not in str(e):
-            raise
+    except ValueError:  # TODO: Is this a wanted exception?
+        pass
 
 
 def test_Atom1Feed(inp):
@@ -291,6 +288,8 @@ def test_forms_DurationField(inp):
     try:
         forms.DurationField().clean(inp)
     except ValidationError:
+        pass
+    except ValueError:  # till https://code.djangoproject.com/ticket/33368 is fixed
         pass
 
 
