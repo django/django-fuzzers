@@ -289,8 +289,6 @@ def test_forms_DurationField(inp):
         forms.DurationField().clean(inp)
     except ValidationError:
         pass
-    except ValueError:  # till https://code.djangoproject.com/ticket/33368 is fixed
-        pass
 
 
 def test_forms_EmailField(inp):
@@ -347,9 +345,6 @@ def test_forms_URLField(inp):
         forms.URLField().clean(inp)
     except ValidationError:
         pass
-    except ValueError as e:  # till https://code.djangoproject.com/ticket/33367 is fixed
-        if "Invalid IPv6 URL" not in str(e):
-            raise
 
 
 def test_forms_UUIDField(inp):
