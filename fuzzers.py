@@ -3,6 +3,8 @@ from django.core.exceptions import (
     SuspiciousFileOperation,
 )
 
+
+from django.utils.numberformat import format
 from django.utils import text
 from django.utils.http import (
     base36_to_int,
@@ -353,8 +355,17 @@ def test_forms_UUIDField(inp):
     except ValidationError:
         pass
 
+def test_numberformat(inp):
+    try:
+        # format
+        # print("Called format!!!!")
+        format(inp, ".") # Call that shit.
+        # print("Aftert...")
+    except:
+        pass
 
 tests = [
+    (test_numberformat, str),
     (test_base36_to_int, str),
     (test_int_to_base64, int),
     (test_escape_leading_slashes, str),
@@ -411,3 +422,8 @@ tests = [
     (test_forms_URLField, str),
     (test_forms_UUIDField, str),
 ]
+
+# These are the tests which only take string inputs
+
+tests_str = [x for x in tests if x[1] == str]
+
