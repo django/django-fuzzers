@@ -1,8 +1,6 @@
 import sys
-
 import atheris
 import mutator # Custom mutator
-
 
 with atheris.instrument_imports():
     import fuzzers
@@ -10,35 +8,17 @@ with atheris.instrument_imports():
 
 
 def TestOneInput(data):
-    if len(data) == 0: # We use the first byte to choose the test, so therefore just do this.
+    if len(data) == 0: # We use the first byte to choose the test, so therefore we can not process empty inputs.
         return
     #assert len(fuzzers.tests) <= 256 # must fit in a byte....
     choice = int(data[0])
     choice = choice % len(fuzzers.tests_str)
     data = data[1:] # Do the thing...
-    #choice = 17
     func, data_type = fuzzers.tests_str[choice]
-    #print("We chose this function: "+str(func))
-    # This loop here causes fuzzing redundancy. Maybe remove this?
-    assert data_type == str # Should be string...
-
-    #print("We chose this function: "+str(func))
-
+    # assert data_type == str # Should be string...
     # Here in the original version we used the fuzz data provider to generate inputs, however in this fork we just use only the functions which take strings.
-
-    '''
-    if data_type == str:
-        data = fdp.ConsumeUnicodeNoSurrogates(sys.maxsize)
-    elif data_type == bytes:
-        data = fdp.ConsumeBytes(sys.maxsize)
-    elif data_type == int:
-        data = fdp.ConsumeInt(sys.maxsize)
-    '''
-
-
-
     try:
-        data = data.decode("utf-8")
+        data = data.decode("utf-8") # Try to decode as hex. All the functions should only take string input, therefore 
         func(data)
     except (UnicodeDecodeError, SuspiciousOperation):
         # Just ignore decode errors
@@ -59,6 +39,5 @@ def CustomMutator(data, max_size, seed):
         return res[:max_size]
     return res
 
-atheris.Setup(sys.argv, TestOneInput, custom_mutator=CustomMutator, internal_libfuzzer=True)
+atheris.Setup(sys.argv, TestOneInput, custom_mutator=CustomMutator, internal_libfuzzer=True) # Use the custom mutator
 atheris.Fuzz()
-

@@ -1,14 +1,11 @@
+# Just a basic fuzzing dictionary. The http protocols are hardcoded because otherwise it would be hard for the fuzzer to get past certain hardcoded string checks
 "https://"
 "org"
 "www"
 "<a>"
 "<"
-
 ">"
-
 "https"
 "http"
 "@"
-
 ":"
-
