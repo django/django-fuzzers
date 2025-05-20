@@ -411,3 +411,7 @@ tests = [
     (test_forms_URLField, str),
     (test_forms_UUIDField, str),
 ]
+
+# These are the tests which only take string inputs
+
+tests_str = [x for x in tests if x[1] == str]
