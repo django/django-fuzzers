@@ -1,6 +1,7 @@
 from django.core.exceptions import (
     ValidationError,
     SuspiciousFileOperation,
+    SuspiciousOperation,
 )
 
 from django.utils import text
@@ -142,12 +143,18 @@ def test_strip_spaces_between_tags(inp):
 def test_strip_tags(inp):
     try:
         strip_tags(inp)
+    except SuspiciousOperation:
+        pass
     except NotImplementedError:  # TODO: this should be fixed
         pass
 
 
 def test_urlize(inp):
-    urlize(inp)
+    try:
+        urlize(inp)
+    except ValueError:
+        # >4300 digits
+        pass
 
 
 def test_smart_split(inp):
