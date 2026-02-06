@@ -162,7 +162,11 @@ def test_smart_split(inp):
 
 
 def test_Truncator(inp):
-    text.Truncator(inp).words(8, "...", html=True)
+    try:
+        text.Truncator(inp).words(8, "...", html=True)
+    except ValueError:
+        # >4300 digits
+        pass
 
 
 def test_wrap(inp):
