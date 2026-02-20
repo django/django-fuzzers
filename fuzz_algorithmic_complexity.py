@@ -1,6 +1,9 @@
 import sys
 import atheris
 import mutator # Custom mutator
+import time # For measuring execution time...
+
+TIMEOUT_MS = 100 # Milliseconds to report a potential DOS issue...
 
 if "--nofuzz" not in sys.argv:
     with atheris.instrument_imports():
@@ -20,15 +23,22 @@ def TestOneInput(data):
     func, data_type = fuzzers.tests_str[choice]
     # assert data_type == str # Should be string...
     # Here in the original version we used the fuzz data provider to generate inputs, however in this fork we just use only the functions which take strings.
+    start = time.time()
     try:
         data = data.decode("utf-8") # Try to decode as hex. All the functions should only take string input, therefore 
         func(data)
     except (UnicodeDecodeError, SuspiciousOperation, AssertionError): # AssertionError is for the html parser errors...
         # Just ignore decode errors
+        end = time.time()
+        if end - start >= TIMEOUT_MS:
+            raise TimeoutError
         return
     except Exception:
         print(func, data_type, repr(data))
         raise
+    end = time.time()
+    if end - start >= TIMEOUT_MS:
+        raise TimeoutError
     return
 
 def CustomMutator(data, max_size, seed):
