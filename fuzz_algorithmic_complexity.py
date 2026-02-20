@@ -2,7 +2,11 @@ import sys
 import atheris
 import mutator # Custom mutator
 
-with atheris.instrument_imports():
+if "--nofuzz" not in sys.argv:
+    with atheris.instrument_imports():
+        import fuzzers
+        from django.core.exceptions import SuspiciousOperation
+else: # Standalone import...
     import fuzzers
     from django.core.exceptions import SuspiciousOperation
 
@@ -19,7 +23,7 @@ def TestOneInput(data):
     try:
         data = data.decode("utf-8") # Try to decode as hex. All the functions should only take string input, therefore 
         func(data)
-    except (UnicodeDecodeError, SuspiciousOperation):
+    except (UnicodeDecodeError, SuspiciousOperation, AssertionError): # AssertionError is for the html parser errors...
         # Just ignore decode errors
         return
     except Exception:
