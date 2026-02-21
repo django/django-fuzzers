@@ -15,6 +15,7 @@ else: # Standalone import...
     from django.core.exceptions import SuspiciousOperation
 
 def TestOneInput(data):
+    print(len(data))
     if len(data) == 0: # We use the first byte to choose the test, so therefore we can not process empty inputs.
         return
     #assert len(fuzzers.tests) <= 256 # must fit in a byte....
