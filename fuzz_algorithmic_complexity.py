@@ -1,11 +1,12 @@
 import sys
-import atheris
 import mutator # Custom mutator
 import time # For measuring execution time...
 
 TIMEOUT_MS = 100 # Milliseconds to report a potential DOS issue...
+# TIMEOUT_MS = TIMEOUT_MS / 1000 # To seconds...
 
 if "--nofuzz" not in sys.argv:
+    import atheris
     with atheris.instrument_imports():
         import fuzzers
         from django.core.exceptions import SuspiciousOperation
@@ -37,20 +38,26 @@ def TestOneInput(data):
         print(func, data_type, repr(data))
         raise
     end = time.time()
+    print(end - start)
     if end - start >= TIMEOUT_MS:
         raise TimeoutError
     return
 
-def CustomMutator(data, max_size, seed):
-    try:
-        res = mutator.mutate(data) # Call custom mutator.
-    except:
-        res = atheris.Mutate(data, len(data))
-    else:
-        res = atheris.Mutate(res, len(res))
-    if len(res) >= max_size: # Truncate inputs which are too long...
-        return res[:max_size]
-    return res
+if "--nofuzz" not in sys.argv:
 
-atheris.Setup(sys.argv, TestOneInput, custom_mutator=CustomMutator, internal_libfuzzer=True) # Use the custom mutator
-atheris.Fuzz()
+    def CustomMutator(data, max_size, seed):
+        try:
+            res = mutator.mutate(data) # Call custom mutator.
+        except:
+            res = atheris.Mutate(data, len(data))
+        else:
+            res = atheris.Mutate(res, len(res))
+        if len(res) >= max_size: # Truncate inputs which are too long...
+            return res[:max_size]
+        return res
+
+    atheris.Setup(sys.argv, TestOneInput, custom_mutator=CustomMutator, internal_libfuzzer=True) # Use the custom mutator
+    atheris.Fuzz()
+else:
+    # Just run the thing with the sys stdin input...
+    TestOneInput(bytes(sys.stdin.read(), encoding="ascii"))
