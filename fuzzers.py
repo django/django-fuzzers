@@ -145,16 +145,17 @@ def test_strip_tags(inp):
         strip_tags(inp)
     except SuspiciousOperation:
         pass
-    except NotImplementedError:  # TODO: this should be fixed
-        pass
+    except ValueError as e:
+        if "Exceeds the limit (4300 digits)" not in str(e):
+            raise
 
 
 def test_urlize(inp):
     try:
         urlize(inp)
-    except ValueError:
-        # >4300 digits
-        pass
+    except ValueError as e:
+        if "Exceeds the limit (4300 digits)" not in str(e):
+            raise
 
 
 def test_smart_split(inp):
@@ -164,9 +165,9 @@ def test_smart_split(inp):
 def test_Truncator(inp):
     try:
         text.Truncator(inp).words(8, "...", html=True)
-    except ValueError:
-        # >4300 digits
-        pass
+    except ValueError as e:
+        if "Exceeds the limit (4300 digits)" not in str(e):
+            raise
 
 
 def test_wrap(inp):
